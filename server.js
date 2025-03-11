@@ -8,15 +8,27 @@ dotenv.config();
 connectDB();    
 
 const app = express();
-app.use(cors());
+// ✅ Allow requests from your frontend
+app.use(cors({
+  origin: [ "http://localhost:5173", "https://micro-biz-backend-microbizmedia-microbizmedias-projects.vercel.app/" ], // Change this to your frontend URL in production
+  methods: "GET,POST,PUT,DELETE",
+  allowedHeaders: "Content-Type"
+}));
 app.use(bodyParser.json());
 app.use(express.static('uploads')); // Ensure uploaded files are accessible
 
+
+const PORT = process.env.PORT || 3000;
 // Route handler for the root path
-app.get('/', (req, res) => { res.send('Server is running...'); });
 app.use("/", require("./routes/jobApplyRoute"));
 app.use("/", require("./routes/contactRoute"));
 
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+app.get("/", (req, res) => {
+  res.send("Hello from Vercel!");
+});
+
+// Do NOT use app.listen()
+// Instead, export the app for Vercel
+module.exports = app;
