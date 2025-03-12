@@ -50,6 +50,7 @@ export const createJobApplyValidationSchema = {
     custom: {
       options: (value, { req }) => {
         // Check if a file was uploaded
+        console.log("Uploaded file:", req.file);
         if (!req.file) {
           throw new Error("Resume is required.");
         }

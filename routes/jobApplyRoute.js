@@ -5,37 +5,48 @@ const sendEmail = require("../utils/mailer.js");
 const multer = require('multer');
 const router = express.Router();
 
-// Multer storage configuration
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-      cb(null, 'uploads/'); // Save files in an "uploads" directory
-  },
-  filename: (req, file, cb) => {
-      cb(null, `${Date.now()}-${file.originalname}`);
-  }
+// ✅ Use memory storage (since we don't need to save files)
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+
+router.options("/apply", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "https://microbizmedia.github.io");
+  res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
+  res.sendStatus(200);
 });
 
-const upload = multer({ storage });
+// ✅ Apply CORS on `/contact` route before processing
+router.use("/apply", (req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://microbizmedia.github.io");
+  res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
 
-router.post("/apply", upload.single('resume'), checkSchema(createJobApplyValidationSchema), async (req, res) => {
-  const result = validationResult(req);
+router.post("/apply", upload.single('resume'), async (req, res) => {
+  // res.header("Access-Control-Allow-Origin", "https://microbizmedia.github.io"); // ✅ Ensure CORS headers on response
+   // ✅ Validate request body (including file)
+   await checkSchema(createJobApplyValidationSchema).run(req);
+   const result = validationResult(req);
   if (!result.isEmpty()) return res.status(400).json({ errors: result.array() }); // Send validation errors to the frontend
   
  
-  const { positionName, candidateName, email, location, yearsOfExperience, message, resumePath} = matchedData(req);
-  // const resumePath = req.file ? req.file.path : null;
+  const { positionName, candidateName, email, location, yearsOfExperience, message} = matchedData(req);
+  const resumeFile = req.file; // ✅ Get file from Multer
+  
   try {
     // const newMessage = new Contact({ positionName, candidateName, email, location, yearsOfExperience, message });
     // const savedMessage = await newMessage.save();
     // console.log("✅ Contact saved in MongoDB:", savedMessage); // Debugging line
    
-    // console.log("Received Data:", { positionName, candidateName, email, message, resumePath });
 
     const emailSent = await sendEmail(
       "martinstojmenovskim@gmail.com", // Change to your email
       `Applicant from jop posting: ${positionName}`,
       `Full Name: ${candidateName}\nEmail Address: ${email}\nLocated: ${location}\nYears of experience: ${yearsOfExperience}\nMessage: ${message}`,
-      resumePath
+      resumeFile
     );
     if (!emailSent) return res.status(500).json({ error: "Failed to send email" });
     return res.status(201).json({ message: "Message saved & email sent successfully!" });
