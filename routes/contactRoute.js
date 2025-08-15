@@ -26,12 +26,10 @@ router.use("/contact", (req, res, next) => {
   }
   res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+   if (req.method === "OPTIONS") {
+    return res.sendStatus(200); // ✅ End preflight here
+  }
   next();
-});
-
-// ✅ Handle preflight (OPTIONS) request
-router.options("/contact", (req, res) => {
-  res.sendStatus(200);
 });
 
 router.post("/contact", checkSchema(createContactValidationSchema), async (req, res) => {
