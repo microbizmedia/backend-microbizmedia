@@ -17,7 +17,7 @@ app.use(cors({
 }));
 // ✅ Handle Preflight Requests Manually
 app.options("*", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "https://microbizmedia.github.io");
+  res.header("Access-Control-Allow-Origin", "https://micro-chi-neon.vercel.app");
   res.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
   res.sendStatus(200);
