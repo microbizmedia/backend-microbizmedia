@@ -20,7 +20,12 @@ const upload = multer({ storage: storage });
 //   res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
 //   res.sendStatus(200);
 // });
-
+router.options("/apply", cors({
+  origin: "https://micro-chi-neon.vercel.app",
+  methods: "POST",
+  allowedHeaders: "Content-Type,Authorization",
+  credentials: true
+}));
 // // ✅ Apply CORS on `/contact` route before processing
 // router.use("/apply", (req, res, next) => {
 //     const origin = req.headers.origin;
