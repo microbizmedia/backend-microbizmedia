@@ -8,20 +8,22 @@ const router = express.Router();
 // ✅ Use memory storage (since we don't need to save files)
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+const allowedOrigins = [
+  "https://microbizmedia.github.io",          // old site
+  "https://micro-chi-neon.vercel.app",        // new site
+  "http://localhost:3000"                     // local dev
+];
 
-
-router.options("/apply", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "https://microbizmedia.github.io");
-  res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
-  res.sendStatus(200);
-});
-
-// ✅ Apply CORS on `/contact` route before processing
-router.use("/apply", (req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://microbizmedia.github.io");
+router.use("/contact", (req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
   res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+   if (req.method === "OPTIONS") {
+    return res.sendStatus(200); // ✅ End preflight here
+  }
   next();
 });
 

@@ -41,8 +41,6 @@ router.post("/contact", checkSchema(createContactValidationSchema), async (req, 
 
   const { clientName, phone, email, budget, message } = matchedData(req);
   try {
-    // const newMessage = new Contact({ positionName, candidateName, email, location, yearsOfExperience, message });
-    // const savedMessage = await newMessage.save();
     const emailSent = await sendEmail(
       "martinstojmenovskim@gmail.com", // Change to your email
       `New Client Inquiry: ${clientName}`,
