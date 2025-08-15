@@ -14,7 +14,7 @@ const allowedOrigins = [
   "http://localhost:3000"                     // local dev
 ];
 
-router.use("/contact", (req, res, next) => {
+router.use("/apply", (req, res, next) => {
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
     res.header("Access-Control-Allow-Origin", origin);
