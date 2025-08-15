@@ -1,4 +1,4 @@
-export const createJobApplyValidationSchema = {
+ const createJobApplyValidationSchema = {
   positionName: true,
   candidateName: {
     notEmpty: {
@@ -77,7 +77,7 @@ export const createJobApplyValidationSchema = {
   },
 }
 
-export const createContactValidationSchema = {
+ const createContactValidationSchema = {
   clientName: {
     notEmpty: {
       errorMessage: "Full Name is required.",
@@ -123,3 +123,5 @@ export const createContactValidationSchema = {
     trim: true,
   },
 };
+
+module.exports = { createJobApplyValidationSchema, createContactValidationSchema };

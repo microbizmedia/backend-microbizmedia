@@ -29,7 +29,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-// const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server running locally on http://localhost:${PORT}`);
+});
 // Route handler for the root path
 app.use("/", require("./routes/jobApplyRoute"));
 app.use("/", require("./routes/contactRoute"));
