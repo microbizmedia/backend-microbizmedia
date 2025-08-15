@@ -6,22 +6,42 @@ const cors = require("cors");
 
 dotenv.config();
 // connectDB();    
-
 const app = express();
-// ✅ Allow requests from your frontend
+
+
+
+
+
+
+// Allowed origin for production
+const allowedOrigins = ["https://micro-chi-neon.vercel.app"];
+
 app.use(cors({
-  origin: [ "http://localhost:3000", "https://microbizmedia.github.io","https://micro-chi-neon.vercel.app" ], // Change this to your frontend URL in production
+  origin: function(origin, callback) {
+    // allow requests with no origin (like Postman)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = "The CORS policy for this site does not allow access from the specified Origin.";
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   methods: "GET,POST,PUT,DELETE",
-  allowedHeaders: "Content-Type,Authorization", // Allow headers
-  credentials: true, // Allow cookies if needed
+  allowedHeaders: "Content-Type,Authorization",
+  credentials: true, // allow cookies if needed
 }));
-// ✅ Handle Preflight Requests Manually
-app.options("*", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "https://micro-chi-neon.vercel.app");
-  res.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
-  res.sendStatus(200);
-});
+
+
+
+
+
+
+
+
+
+
+
 // app.use(bodyParser.json());
 // app.use(express.static('uploads')); // Ensure uploaded files are accessible
 // ✅ Ensure JSON parsing and multipart data handling
