@@ -9,6 +9,12 @@ const router = express.Router();
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+router.get("/", (req, res) => {
+  res.send("✅ Backend is running");
+});
+router.get("/apply", (req, res) => {
+  res.send("This endpoint only accepts POST requests for job applications.");
+});
 
 router.options("/apply", (req, res) => {
   res.header("Access-Control-Allow-Origin", "https://microbizmedia.github.io");
