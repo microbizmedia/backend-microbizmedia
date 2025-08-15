@@ -4,22 +4,6 @@ const { createContactValidationSchema } = require("../utils/validationSchemas.js
 const sendEmail = require("../utils/mailer.js");
 const router = express.Router();
 
-// ✅ Handle preflight (OPTIONS) request for `/contact`
-router.options("/contact", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "https://microbizmedia.github.io");
-  res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.sendStatus(200);
-});
-
-// ✅ Apply CORS on `/contact` route before processing
-router.use("/contact", (req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://microbizmedia.github.io");
-  res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
-
 router.post("/contact",  checkSchema(createContactValidationSchema), async (req, res) => {
   
   const result = validationResult(req);

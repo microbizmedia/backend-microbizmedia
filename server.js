@@ -1,30 +1,41 @@
+'use strict';
+
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
-// const bodyParser = require("body-parser");
-// const connectDB = require("./config/db");
 
+// Load environment variables
 dotenv.config();
-// connectDB();    
+
+// Initialize Express app
 const app = express();
 
-
-
-
-// Simplified CORS configuration
+// -----------------------------
+// CORS Configuration
+// -----------------------------
 const corsOptions = {
   origin: [
     "https://micro-chi-neon.vercel.app", // Your Vercel frontend
-    "http://localhost:3000"              // For local development
+    "http://localhost:3000"               // For local development
   ],
   methods: "GET,POST,PUT,DELETE",
   allowedHeaders: "Content-Type,Authorization",
   credentials: true
 };
 
-
+// Apply CORS globally
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+app.options("*", cors(corsOptions)); // Preflight
+
+// -----------------------------
+// Middleware
+// -----------------------------
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// -----------------------------
+// Routes
+// -----------------------------
 app.get("/check-cors", (req, res) => {
   res.json({
     originHeader: req.headers.origin || null,
@@ -32,23 +43,18 @@ app.get("/check-cors", (req, res) => {
   });
 });
 
-
-
-
-
-
-
-// app.use(bodyParser.json());
-// app.use(express.static('uploads')); // Ensure uploaded files are accessible
-// ✅ Ensure JSON parsing and multipart data handling
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-
-// Route handler for the root path
+// Main routes
 app.use("/", require("./routes/jobApplyRoute"));
 app.use("/", require("./routes/contactRoute"));
 
+// Optional root route
+app.get("/", (req, res) => {
+  res.send("Hello from Vercel!");
+});
+
+// -----------------------------
+// Error handling
+// -----------------------------
 process.on("uncaughtException", (err) => {
   console.error("❌ Uncaught Exception:", err);
 });
@@ -57,20 +63,17 @@ process.on("unhandledRejection", (reason, promise) => {
   console.error("❌ Unhandled Rejection:", reason);
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello from Vercel!");
-});
-
-
-app.get("/check-cors", (req, res) => {
-  res.json({
-    originHeader: req.headers.origin || null,
-    message: "CORS is applied globally",
+// -----------------------------
+// Local development
+// -----------------------------
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Local server running at http://localhost:${PORT}`);
   });
-});
+}
 
-
-
-// Do NOT use app.listen()
-// Instead, export the app for Vercel
+// -----------------------------
+// Export for Vercel
+// -----------------------------
 module.exports = app;

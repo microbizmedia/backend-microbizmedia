@@ -1,14 +1,9 @@
 {
-  "rewrites": [],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src *; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live;"
-        }
-      ]
-    }
+  "version": 2,
+  "builds": [
+    { "src": "server.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "server.js" }
   ]
 }
