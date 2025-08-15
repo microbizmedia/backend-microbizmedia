@@ -10,6 +10,7 @@ const app = express();
 
 
 
+
 // Simplified CORS configuration
 const corsOptions = {
   origin: [
@@ -21,8 +22,17 @@ const corsOptions = {
   credentials: true
 };
 
+
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Enable pre-flight for all routes
+app.options("*", cors(corsOptions));
+app.get("/check-cors", (req, res) => {
+  res.json({
+    originHeader: req.headers.origin || null,
+    message: "CORS is applied globally",
+  });
+});
+
+
 
 
 
@@ -50,6 +60,16 @@ process.on("unhandledRejection", (reason, promise) => {
 app.get("/", (req, res) => {
   res.send("Hello from Vercel!");
 });
+
+
+app.get("/check-cors", (req, res) => {
+  res.json({
+    originHeader: req.headers.origin || null,
+    message: "CORS is applied globally",
+  });
+});
+
+
 
 // Do NOT use app.listen()
 // Instead, export the app for Vercel
