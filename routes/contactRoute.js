@@ -4,38 +4,51 @@ const { createContactValidationSchema } = require("../utils/validationSchemas.js
 const sendEmail = require("../utils/mailer.js");
 const router = express.Router();
 
-// ✅ Handle preflight (OPTIONS) request for `/contact`
-router.options("/contact", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "https://microbizmedia.github.io");
-  res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.sendStatus(200);
-});
+const allowedOrigins = [
+  "https://microbizmedia.github.io",          // old site
+  "https://micro-chi-neon.vercel.app",        // new site
+  "http://localhost:3000"                     // local dev
+];
 
-// ✅ Apply CORS on `/contact` route before processing
+// // ✅ Handle preflight (OPTIONS) request for `/contact`
+// router.options("/contact", (req, res) => {
+//   res.header("Access-Control-Allow-Origin", "https://microbizmedia.github.io");
+//   res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
+//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   res.sendStatus(200);
+// });
+
+// ✅ Middleware to handle CORS for /contact
 router.use("/contact", (req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://microbizmedia.github.io");
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
   res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
   next();
 });
 
-router.post("/contact",  checkSchema(createContactValidationSchema), async (req, res) => {
-  
+// ✅ Handle preflight (OPTIONS) request
+router.options("/contact", (req, res) => {
+  res.sendStatus(200);
+});
+
+router.post("/contact", checkSchema(createContactValidationSchema), async (req, res) => {
   const result = validationResult(req);
- 
+
   if (!result.isEmpty()) {
-    return res.status(400).json({ errors: result.array() }); 
+    return res.status(400).json({ errors: result.array() });
   }// Send validation errors to the frontend
-  
-  const { clientName, phone, email, budget,  message} = matchedData(req);
+
+  const { clientName, phone, email, budget, message } = matchedData(req);
   try {
     // const newMessage = new Contact({ positionName, candidateName, email, location, yearsOfExperience, message });
     // const savedMessage = await newMessage.save();
     const emailSent = await sendEmail(
-        "martinstojmenovskim@gmail.com", // Change to your email
-        `New Client Inquiry: ${clientName}`,
-        `
+      "martinstojmenovskim@gmail.com", // Change to your email
+      `New Client Inquiry: ${clientName}`,
+      `
           Client Details:
           - Name: ${clientName}
           - Email: ${email}
