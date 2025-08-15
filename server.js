@@ -10,14 +10,14 @@ dotenv.config();
 const app = express();
 // ✅ Allow requests from your frontend
 app.use(cors({
-  origin: [ "http://localhost:5173", "https://microbizmedia.github.io" ], // Change this to your frontend URL in production
+  origin: [ "http://localhost:5173", "https://microbizmedia.github.io/web" ], // Change this to your frontend URL in production
   methods: "GET,POST,PUT,DELETE",
   allowedHeaders: "Content-Type,Authorization", // Allow headers
   credentials: true, // Allow cookies if needed
 }));
 // ✅ Handle Preflight Requests Manually
 app.options("*", (req, res) => {
-  res.header("Access-Control-Allow-Origin", "https://microbizmedia.github.io");
+  res.header("Access-Control-Allow-Origin", "https://microbizmedia.github.io/web");
   res.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   res.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
   res.sendStatus(200);
